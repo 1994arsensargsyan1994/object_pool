@@ -1,6 +1,10 @@
 package com.example.object_pool.pool;
 
-public interface ObjectPool<T> {
+
+import com.example.object_pool.pool.objectfactory.ObjectFactory;
+import com.example.object_pool.pool.validation.Validatable;
+
+public interface ObjectPool<T> extends ObjectFactory<T>, Validatable<T> {
 
     T get() throws InterruptedException;
 

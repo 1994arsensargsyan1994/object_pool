@@ -27,6 +27,9 @@ public class IntegerPool extends AbstractObjectPool<Integer> {
 
     @Override
     public boolean validate(Integer integer) {
+        if (!basValidate(integer)) {
+            return false;
+        }
         return set.contains(integer);
     }
 }

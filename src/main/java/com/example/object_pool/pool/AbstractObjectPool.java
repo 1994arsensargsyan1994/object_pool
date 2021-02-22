@@ -1,5 +1,6 @@
 package com.example.object_pool.pool;
 
+import com.example.object_pool.exception.ObjectNotValidException;
 import com.example.object_pool.pool.config.ObjectPoolConfig;
 
 import java.util.LinkedList;
@@ -49,16 +50,16 @@ public abstract class AbstractObjectPool<T> implements ObjectPool<T> {
     @Override
     public synchronized void release(final T object) {
 
-        if (validate(object)) {
-            inUSeObjects.remove(object);
-            pooledObjects.add(object);
+        if (!validate(object)) {
+            throw new ObjectNotValidException("this object not valid and das not return object pool");
         }
+
+        inUSeObjects.remove(object);
+        pooledObjects.add(object);
         if (this.pooledObjects.size() == 0) {
             this.notify();
         }
     }
 
-    public abstract T createObject();
 
-    public abstract boolean validate(T o);
 }

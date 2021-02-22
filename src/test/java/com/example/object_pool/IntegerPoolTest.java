@@ -2,6 +2,7 @@ package com.example.object_pool;
 
 import com.example.object_pool.pool.IntegerPool;
 import com.example.object_pool.pool.config.ObjectPoolConfig;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,12 +12,18 @@ public class IntegerPoolTest {
 
     private static final int POOL_MIN_SIZE = 0;
     private static final int POOL_MAX_SIZE = 1;
+    IntegerPool integerPool;
+
+    @Before
+    public void init() {
+        integerPool = new IntegerPool(
+                ObjectPoolConfig.of(POOL_MIN_SIZE, POOL_MAX_SIZE)
+        );
+    }
 
     @Test
     public void testMultiThreading() throws InterruptedException {
-        final IntegerPool integerPool = new IntegerPool(
-                ObjectPoolConfig.of(POOL_MIN_SIZE, POOL_MAX_SIZE)
-        );
+
         final AtomicReference<Integer> atomicReference = new AtomicReference<>();
 
         final Thread t1 = new Thread(() -> {
@@ -46,11 +53,8 @@ public class IntegerPoolTest {
     }
 
     @Test
-    public  void  test(){
+    public void test() {
 
-        final IntegerPool integerPool = new IntegerPool(
-                ObjectPoolConfig.of(POOL_MIN_SIZE, POOL_MAX_SIZE)
-        );
 
         Integer integer = integerPool.get();
 
@@ -62,18 +66,20 @@ public class IntegerPoolTest {
     }
 
     @Test
-    public  void estGrowPool() throws InterruptedException {
+    public void estGrowPool() throws InterruptedException {
         final IntegerPool integerPool = new IntegerPool(
                 ObjectPoolConfig.of(5, 10)
         );
 
-       final AtomicReference<Integer> atomicReference  = new AtomicReference<>();
+        final AtomicReference<Integer> atomicReference = new AtomicReference<>();
+        final AtomicReference<Integer> atomicReference2 = new AtomicReference<>();
 
 
-        Thread thread = new Thread(() ->  {
-            IntStream.range(0,10).forEach((val) -> integerPool.get());
+        Thread thread = new Thread(() -> {
+            IntStream.range(0, 9).forEach((val) -> integerPool.get());
 
-           atomicReference.set(integerPool.get());
+            atomicReference.set(integerPool.get());
+            atomicReference2.set(integerPool.get());
 
 
         });
@@ -81,7 +87,7 @@ public class IntegerPoolTest {
 
 
         try {
-            Thread.sleep(10 *1000);
+            Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -89,10 +95,13 @@ public class IntegerPoolTest {
         integerPool.release(atomicReference.get());
 
 
-
-
-
-
         System.out.println(integerPool);
+    }
+
+
+    @Test
+    public void testValidator() {
+        Integer integer = integerPool.get();
+        integerPool.release(56878);
     }
 }
