@@ -1,4 +1,4 @@
-package com.example.object_pool.pool.config;
+package io.arsen.object.pool.config;
 
 public interface ObjectPoolConfig {
 
